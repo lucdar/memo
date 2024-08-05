@@ -1,5 +1,5 @@
 use chrono::Local;
-use edit::{self, edit_file};
+use edit::edit_file;
 use std::fs;
 use std::{io::Write, path::PathBuf};
 
@@ -32,11 +32,13 @@ pub fn compose(memos_dir: PathBuf, title: Option<String>) -> Result<(), std::io:
     // dbg!(&filename);
 
     for attempt in 0.. {
-        if attempt != 0 {
-            let extension = format!(" ({})", attempt);
-            filename += &extension;
-        }
-        let mut dest = memos_dir.join(&filename);
+        let number_suffix = format!(" ({})", attempt);
+        let new_filename = if attempt != 0 {
+            filename.clone() + &number_suffix
+        } else {
+            filename.clone()
+        };
+        let mut dest = memos_dir.join(&new_filename);
         dest.set_extension("md");
         if dest.exists() {
             continue;
