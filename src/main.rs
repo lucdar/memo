@@ -1,4 +1,4 @@
-use anyhow::{Result, Context};
+use anyhow::Result;
 use clap::{CommandFactory, Parser, Subcommand};
 use directories::UserDirs;
 use std::fs::create_dir;

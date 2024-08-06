@@ -6,13 +6,13 @@ use rand::seq::SliceRandom;
 use std::fs;
 use std::{io::Write, path::PathBuf};
 
-
 pub fn compose(memos_dir: PathBuf, title: Option<String>) -> Result<()> {
     // dbg!("in compose", memos_dir, title);
     let (mut file, filepath) = edit::Builder::new()
         .suffix(".md")
         .rand_bytes(5)
-        .tempfile_in(&memos_dir).context("failed to create tempfile")?
+        .tempfile_in(&memos_dir)
+        .context("failed to create tempfile")?
         .keep()
         .context("failed to keep tempfile")?;
     // dbg!(&filepath);
@@ -27,7 +27,7 @@ pub fn compose(memos_dir: PathBuf, title: Option<String>) -> Result<()> {
     edit_file(&filepath).context("failed to spawn editor")?;
 
     // Use current time as title if no title specified
-    let mut filename = title.unwrap_or(
+    let filename = title.unwrap_or(
         Local::now()
             .format(
                 //TODO: add date format as a parameter
@@ -62,25 +62,18 @@ impl std::fmt::Display for DisplayablePathBuf {
 pub fn edit(memos_dir: PathBuf, random: bool) -> Result<()> {
     let mut memos: Vec<DisplayablePathBuf> = vec![];
     for memo in fs::read_dir(&memos_dir)? {
-        let memo = DisplayablePathBuf { 
-            pb: memo
-                .context("error reading memos directory")?
-                .path()
+        let memo = DisplayablePathBuf {
+            pb: memo.context("error reading memos directory")?.path(),
         };
         memos.push(memo);
     }
 
-    let edit_helper = |selection| {
-        edit_file(memos_dir.join(selection));
-        Ok(())
-    };
+    let edit_helper =
+        |selection| edit_file(memos_dir.join(selection)).context("failed to spawn editor");
 
     if random {
-        let selection = &memos
-            .choose(&mut rand::thread_rng())
-            .unwrap()
-            .pb;
-        return edit_helper(selection)
+        let selection = &memos.choose(&mut rand::thread_rng()).unwrap().pb;
+        return edit_helper(selection);
     }
 
     let mut select = Select::new(&memos, std::io::stdout());
@@ -91,6 +84,4 @@ pub fn edit(memos_dir: PathBuf, random: bool) -> Result<()> {
         .pb;
 
     edit_helper(selection)
-
-    
 }

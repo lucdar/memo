@@ -4,7 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.86"
 chrono = "0.4.38"
 clap = { version = "4.5.13", features = ["derive", "env"] }
+cli_select = "0.1.6"
 directories = "5.0.1"
 edit = "0.1.5"
+rand = "0.8.5"
