@@ -1,3 +1,4 @@
+use anyhow::{Result, Context};
 use clap::{CommandFactory, Parser, Subcommand};
 use directories::UserDirs;
 use std::fs::create_dir;
@@ -57,7 +58,7 @@ fn ask_confirm(question: &str) -> bool {
     }
 }
 
-fn main() -> Result<(), std::io::Error> {
+fn main() -> Result<()> {
     let args = Args::parse();
     // dbg!(&args);
 
@@ -88,9 +89,6 @@ fn main() -> Result<(), std::io::Error> {
             // dbg!(&title);
             memo::compose(memos_dir, title)
         }
-        Commands::Edit { random: _ } => {
-            //TODO: Implement Edit
-            todo!("Implement edit command.");
-        }
+        Commands::Edit { random } => memo::edit(memos_dir, random),
     }
 }
